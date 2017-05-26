@@ -1,0 +1,14 @@
+{
+    "manifest_version": 2,
+
+    "name": "icanhackwordz",
+    "description": "icanhazwordz solver",
+    "version": "1",
+
+    "permissions": [
+        "<all_urls>",
+        "tabs"
+    ],
+
+    "background": { "scripts": ["background.js"] }
+}
