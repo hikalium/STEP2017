@@ -20,6 +20,25 @@ function calcKeyForWord(word){
 	return key;
 }
 
+function isWordAcontainsB(a, b)
+{
+	for(var i = 0; i < a.length; a++){
+		if(b.charCodeAt(i) > a.charCodeAt(i)) return false;
+	}
+	return true;
+}
+
+function getAvailableWordsFromKey(key)
+{
+	var wList = [];
+	for(var k in wordKeys){
+		if(isWordAcontainsB(key, k)){
+			wList = wList.concat(wordKeys[k]);
+		}
+	}
+	return wList;
+}
+
 for(var w of wordList){
 	var key = calcKeyForWord(w);
 	if(wordKeys[key] == undefined) wordKeys[key] = [];
@@ -37,4 +56,6 @@ reader.on('line', function (line) {
 	console.log("KEY: " + key);
 	console.log("COMPLETE MATCH: ");
 	console.log(wordKeys[key]);
+	console.log("SUBSET MATCH: ");
+	console.log(getAvailableWordsFromKey(key));
 });
