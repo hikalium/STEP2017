@@ -4,6 +4,11 @@ var wordList = s.toUpperCase().split("\n");
 
 var wordKeys = {};
 
+var wordKeysScores = {};
+
+var scoreCharTable3 = [74, 75, 81, 88, 90];
+var scoreCharTable2 = [67, 70, 72, 76, 77, 80, 86, 87];
+
 function calcKeyForWord(word){
 	var alphaCountList = [];
 	word = word.toUpperCase();
@@ -14,29 +19,39 @@ function calcKeyForWord(word){
 		alphaCountList[word.charCodeAt(i)]++;
 	}
 	var key = "";
+	var score = 0;
 	for(var i = 65; i <= 90; i++){
 		key += alphaCountList[i];
+		if(scoreCharTable3.includes(i))			score += alphaCountList[i] * 3;
+		else if(scoreCharTable2.includes(i))	score += alphaCountList[i] * 2;
+		else score += alphaCountList[i] * 1;
 	}
+	wordKeysScores[key] = score;
 	return key;
 }
 
 function isWordAcontainsB(a, b)
 {
-	for(var i = 0; i < a.length; a++){
+	for(var i = 0; i < a.length; i++){
 		if(b.charCodeAt(i) > a.charCodeAt(i)) return false;
 	}
 	return true;
 }
 
-function getAvailableWordsFromKey(key)
+function getAvailableKeys(key)
 {
-	var wList = [];
+	var kList = [];
 	for(var k in wordKeys){
 		if(isWordAcontainsB(key, k)){
-			wList = wList.concat(wordKeys[k]);
+			kList.push(k);
 		}
 	}
-	return wList;
+	return kList;
+}
+
+function sortKeysByScore(keys)
+{
+	return keys.sort(function (a, b){return wordKeysScores[b] - wordKeysScores[a]});
 }
 
 for(var w of wordList){
@@ -44,7 +59,10 @@ for(var w of wordList){
 	if(wordKeys[key] == undefined) wordKeys[key] = [];
 	wordKeys[key].push(w);
 }
-console.log(wordKeys);
+
+for(var k in wordKeys){
+	console.log(k + "("+ wordKeysScores[k]  +"):" + wordKeys[k]);
+}
 
 var reader = require('readline').createInterface({
 	input: process.stdin,
@@ -57,5 +75,7 @@ reader.on('line', function (line) {
 	console.log("COMPLETE MATCH: ");
 	console.log(wordKeys[key]);
 	console.log("SUBSET MATCH: ");
-	console.log(getAvailableWordsFromKey(key));
+	var candidateKeys = sortKeysByScore(getAvailableKeys(key));
+	var bestCandidate = wordKeys[candidateKeys[0]];
+	console.log(bestCandidate);
 });
