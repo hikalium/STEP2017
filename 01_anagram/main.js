@@ -1,6 +1,6 @@
 
 var a = 0;
-if(1){
+try{
 	var chars = "";
 	var rows = document.body.children[1].children[0].children[0].childNodes[0].children[0].children[0].children;
 	for(var y = 0; y < 4; y++){
@@ -10,4 +10,6 @@ if(1){
 		}
 	}
 	console.log(chars);
+} catch(e){
+	console.log("It seems not in the game.")
 }
