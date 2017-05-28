@@ -1,4 +1,9 @@
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	console.log(request);
+	document.getElementById("MoveField").value = request.chars;
+});
+
 var a = 0;
 try{
 	var chars = "";
@@ -10,6 +15,7 @@ try{
 		}
 	}
 	console.log(chars);
+	chrome.runtime.sendMessage({type: "chars", chars: chars});
 } catch(e){
-	console.log("It seems not in the game.")
+	console.log("error: " + e)
 }

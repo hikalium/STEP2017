@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>i can hack wordz</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+		var socket;
+		function getWordFromChars(){
+			var chars = document.getElementById("charsInput").value;
+			console.log("chars: " + chars);
+			socket.emit("input", chars);
+		}
+
+		onload = function(){
+			// Socket.io
+			socket = io(location.protocol + '//' + location.host);
+			socket.on('connect', function(){
+				console.log("sock: connect");
+			});
+			socket.on('event', function(data){
+				console.log("sock: event");
+				console.log(data);
+			});
+			socket.on('word', function(data){
+				document.getElementById("wordInput").value = data;
+				document.getElementById("sendWordBtn").click();
+			});
+			socket.on('disconnect', function(){
+				console.log("sock: disconnected");
+			});
+/*
+			recognition.onresult = function(e){
+				console.log("result");
+				//console.log(e);
+				var results = e.results;
+				console.log(results);
+				for(var i = e.resultIndex; i<results.length; i++){
+					if(results[i].isFinal){
+						var confidence = results[i][0].confidence;
+						var text = results[i][0].transcript;
+						console.log("" + confidence + ">> " + text);
+						log("result: " + text);
+						var postData = {
+							type: 'speech',
+							confidence: confidence,
+							text: text
+						};
+						console.log(socket);
+						socket.emit("input", postData);
+						spBox.innerText = text;
+						spBox.style.color = "#00ff00";
+					} else{
+						console.log(results[i][0].transcript);
+						spBox.innerText = results[i][0].transcript;
+						spBox.style.color = "#cc0000";
+					}
+				}
+			};
+			*/
+		}
+		</script>
+	</head>
+	<body>
+		<h2>i can hack wordz</h2>
+		<div>
+			<input type="text" id="charsInput"></input>
+			<button id="getWordBtn" onClick="getWordFromChars()">Get word!</button>
+		</div>
+		<div>
+			<input type="text" id="wordInput"></input>
+			<button id="sendWordBtn">Send the word!</button>
+		</div>
+	</body>
+</html>
