@@ -2,6 +2,8 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(request);
 	document.getElementById("MoveField").value = request.chars;
+	var ch = document.getElementById("MoveField").parentNode.children;
+	ch[ch.length - 2].click()
 });
 
 var a = 0;

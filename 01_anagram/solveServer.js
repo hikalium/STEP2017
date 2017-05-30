@@ -12,6 +12,7 @@ var scoreCharTable2 = [67, 70, 72, 76, 77, 80, 86, 87];
 function calcKeyForWord(word){
 	var alphaCountList = [];
 	word = word.toUpperCase();
+	word = word.split("QU").join("Q");
 	for(var i = 65; i <= 90; i++){
 		alphaCountList[i] = 0;
 	}
@@ -30,7 +31,7 @@ function calcKeyForWord(word){
 	return key;
 }
 
-function isWordAcontainsB(a, b)
+function isWordKeyAcontainsB(a, b)
 {
 	for(var i = 0; i < a.length; i++){
 		if(b.charCodeAt(i) > a.charCodeAt(i)) return false;
@@ -42,7 +43,7 @@ function getAvailableKeys(key)
 {
 	var kList = [];
 	for(var k in wordKeys){
-		if(isWordAcontainsB(key, k)){
+		if(isWordKeyAcontainsB(key, k)){
 			kList.push(k);
 		}
 	}
@@ -93,8 +94,9 @@ this.io.on('connection', function (socket) {
 		console.log(wordKeys[key]);
 		console.log("SUBSET MATCH: ");
 		var candidateKeys = sortKeysByScore(getAvailableKeys(key));
-		var bestCandidate = wordKeys[candidateKeys[0]];
-		console.log(bestCandidate);
+		var bestKey = candidateKeys[0];
+		var bestCandidate = wordKeys[bestKey][0];
+		console.log(bestCandidate + "("+wordKeysScores[bestKey]+")");
 		socket.emit("word", bestCandidate);
 	});
 });
