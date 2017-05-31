@@ -1,0 +1,25 @@
+{
+  "name": "icanhackwordz",
+  "version": "1.0.0",
+  "description": "i can hack wordz",
+  "main": "main.js",
+  "dependencies": {
+    "@types/node": "^7.0.22",
+    "request": "^2.81.0",
+    "socket.io": "^2.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hikalium/STEP2017.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hikalium/STEP2017/issues"
+  },
+  "homepage": "https://github.com/hikalium/STEP2017#readme"
+}
