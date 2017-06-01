@@ -1,3 +1,4 @@
 dictionary.words.txt
 node_modules
 *.swp
+*.sh
