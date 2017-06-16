@@ -46,7 +46,7 @@ def tokenize(line):
 			index = index + 1
 		else:
 			print 'Invalid character found: ' + line[index]
-			exit(1)
+			return False
 		tokens.append(token)
 	# print tokens
 	return tokens
@@ -101,9 +101,13 @@ def evaluate(evalStack):
 				print "Eval error (not enough operand)"
 				return False
 			elif token['type'] == 'OP' and token['op'] in evalTable:
-				tmpStack[-2]["val"] = evalTable[token['op']](
-						tmpStack[-2]["val"], tmpStack[-1]["val"])
-				tmpStack.pop()
+				try:
+					tmpStack[-2]["val"] = evalTable[token['op']](
+							tmpStack[-2]["val"], tmpStack[-1]["val"])
+					tmpStack.pop()
+				except ZeroDivisionError:
+					print "CANNOT divide by 0 !!!!"
+					return False
 			else:
 				print 'Unknown operator', token['type']
 				return False
@@ -115,6 +119,8 @@ def evaluate(evalStack):
 
 def evalLine(line):
 	tokens = tokenize(line)
+	if tokens == False:
+		return False
 	evalStack = parse(tokens)
 	if evalStack == False:
 		return False
@@ -122,7 +128,9 @@ def evalLine(line):
 
 def test(line, expectedAnswer):
 	actualAnswer = evalLine(line)
-	if abs(actualAnswer - expectedAnswer) < 1e-8:
+	if expectedAnswer == False and actualAnswer == False:
+		print "PASS! (%s = %r)" % (line, expectedAnswer)
+	elif abs(actualAnswer - expectedAnswer) < 1e-8:
 		print "PASS! (%s = %f)" % (line, expectedAnswer)
 	else:
 		print "FAIL! (%s should be %f but was %f)" % (line, expectedAnswer, actualAnswer)
@@ -145,6 +153,8 @@ def runTest():
 	test("13 % 6", 1)
 	test("2 ^ (1 + 3) * 3 - 5 * 2", 38)
 	test("(3.0 + 4 * (2 - 1)) / 5", 1.4)
+	test("k", False)
+	test("1 / 0", False)
 	#
 	print "==== Test finished! ====\n"
 
