@@ -13,7 +13,7 @@ evalTable = {
 	"ADD": lambda L, R : L + R,
 	"SUB": lambda L, R : L - R,
 	"MUL": lambda L, R : L * R,
-	"DIV": lambda L, R : L / R,
+	"DIV": lambda L, R : float(L) / R,
 	"MOD": lambda L, R : L % R,
 	"POW": lambda L, R : L ** R,
 }
@@ -132,12 +132,19 @@ def test(line, expectedAnswer):
 def runTest():
 	print "==== Test started! ===="
 	test("1+2", 3)
+	test("1-2", -1)
+	test("1*2", 2)
+	test("1/2", 0.5)
+	test("9%7", 2)
+	test("3^10", 59049)
+	#
 	test("1.0+2.1-3", 0.1)
 	test("1.0+2.1*3", 7.3)
 	test("3 + 2 * 6 / 3 * 5 - 2", 21)
 	test("(5 + 3) * 3 - 3 * (2 + 1)", 15)
 	test("13 % 6", 1)
 	test("2 ^ (1 + 3) * 3 - 5 * 2", 38)
+	#
 	print "==== Test finished! ====\n"
 
 runTest()
