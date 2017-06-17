@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	ifs.open("wikipedia_links/links.txt");
 	//ifs.open("test.txt");
 
-	int lastFrom = 1;
+	int lastFrom = 0;
 	while(!ifs.eof()){
 		std::string line, token;
 		std::getline(ifs, line);
@@ -32,17 +32,17 @@ int main(int argc, char *argv[])
 		//std::cout << from << "," << to << std::endl;
 		if(fromID < num_of_pages) relCount[fromID]++;
 		if(lastFrom != fromID){
-			std::cout << from << "," << relCount[lastFrom] << std::endl;
+			std::cout << lastFrom << "\t" << relCount[lastFrom] << std::endl;
 			lastFrom = fromID;
 		}
 	}
-
+/*
 	int maxIndex = 0;
 	for(int i = 0; i <= num_of_pages; i++){
 		if(relCount[i] >= relCount[maxIndex]) maxIndex = i;
 	}
 
 	std::cout << "max: " << maxIndex << "\t" << relCount[maxIndex] << std::endl;
-
+*/
 	return 0;
 }
