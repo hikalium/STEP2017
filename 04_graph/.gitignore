@@ -1,5 +1,7 @@
 wikipedia_links
 a.out
 count_rel
+binrel
+txt2bin
 *.txt
 *.bin
