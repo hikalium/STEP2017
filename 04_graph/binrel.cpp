@@ -13,10 +13,14 @@ std::ifstream ifs_pages;
 std::string title[max_pages];
 int page_rels_start_index[max_pages];
 int num_of_pages = 0;
-void scanPages()
+void scanPages(const char *fname)
 {
 	std::cout << "scanPages: begin" << std::endl;
-	ifs_pages.open("wikipedia_links/pages.txt");
+	ifs_pages.open(fname);
+	if(!ifs_pages){
+		std::cout << "file not found: " << fname << std::endl;
+		exit(1);
+	}
 	while(!ifs_pages.eof()){
 		std::string line, token;
 		std::getline(ifs_pages, line);
@@ -29,10 +33,14 @@ void scanPages()
 	std::cout << "scanPages: end" << std::endl;
 }
 
-void scanRels()
+void scanRels(const char *fname)
 {
 	std::ifstream ifs;
-	ifs.open("rel.bin");
+	ifs.open(fname);
+	if(!ifs){
+		std::cout << "file not found: " << fname << std::endl;
+		exit(1);
+	}
 
 	std::cout << "scanRels: begin" << std::endl;
 
@@ -41,6 +49,7 @@ void scanRels()
 	int last_from_id = 0;
 	while(!ifs.eof()){
 		ifs.read((char *)&rels[num_of_rels][0], sizeof(int));
+		if(ifs.eof()) break;
 		ifs.read((char *)&rels[num_of_rels][1], sizeof(int));
 		int from_id = rels[num_of_rels][0];
 		if(from_id != last_from_id){
@@ -68,7 +77,7 @@ void printFromIndex()
 	}
 }
 
-void printAllDepth(int maxDepth)
+void printAllDepthPages(int maxDepth)
 {
 	for(int d = 0; d <= maxDepth; d++){
 		for(int i = 0; i < num_of_pages; i++){
@@ -88,19 +97,41 @@ void printAllDepth(int maxDepth)
 			i << ": " << title[i] << std::endl;
 	}
 }
-/*
-void printDepthStatistics()
+
+void printDepthPagesStatistics(int maxDepth)
 {
-	for(int i = -1; )
+	int count;
+	// print not connected
+	count = 0;
 	for(int i = 0; i < num_of_pages; i++){
 		int depth = page_depth[i];
-		if(depth == -1) std::cout << "XXXX ";
-		else for(int k = 0; k < depth; k++) std::cout << "\t";
+		if(depth != -1) continue;
+		count++;
+	}
+	std::cout << count << "\t";
+	// check each depths
+	// TODO: improve performance
+	for(int d = 0; d <= maxDepth; d++){
+		count = 0;
+		for(int i = 0; i < num_of_pages; i++){
+			int depth = page_depth[i];
+			if(depth != d) continue;
+			count++;
+		}
+		std::cout << count << "\t";
+	}
+	std::cout << std::endl;
+}
+
+void printMostDistantPages(int maxDepth)
+{
+	for(int i = 0; i < num_of_pages; i++){
+		int depth = page_depth[i];
+		if(depth != maxDepth) continue;
 		std::cout << depth << " > " << 
 			i << ": " << title[i] << std::endl;
 	}
 }
-*/
 
 int dfs(int depth)
 {
@@ -115,14 +146,13 @@ int dfs(int depth)
 		//
 		for(int i = page_rels_start_index[t]; ; i++){
 			if(rels[i][0] != t) break;
-			if(page_depth[rels[i][1]] == -1){
+			int to = rels[i][1];
+			if(page_depth[to] == -1){
 				//for(int k = 0; k < depth + 1; k++) std::cout << "\t";
-				int to = rels[i][1];
 				page_depth[to] = depth + 1;
-				/*
-				std::cout << depth + 1 << " > " << 
-					to << "\t" << title[to] << std::endl;
-					*/
+				
+				//std::cout << rels[i][0] << " -> " << to << std::endl;
+
 				count++;
 			}
 		}
@@ -132,10 +162,15 @@ int dfs(int depth)
 
 int main(int argc, char *argv[])
 {
-	scanPages();
-	scanRels();
+	if(argc < 3){
+		std::cout << "usage: binrel <links.bin> <pages.txt>" << std::endl;
+		return 1;
+	}
+	//
+	scanPages(argv[2]);
+	scanRels(argv[1]);
 	printFromIndex();
-	std::cout << "ready: rels = " << num_of_rels << std::endl;	
+	std::cout << "ready: rels = " << num_of_rels << " pages = " << num_of_pages << std::endl;	
 	//
 	while(1){
 		int root_index;
@@ -148,11 +183,14 @@ int main(int argc, char *argv[])
 			int count = dfs(i);
 			std::cout << i << ": count=" << count << std::endl;
 			if(count == 0){
-				maxDepth = i - 1;
+				maxDepth = i;
 				break;
 			}
 		}
-		printAllDepth(maxDepth);
+		printDepthPagesStatistics(maxDepth);
+		std::cout << "most distant page from " << title[root_index] << " is:" << std::endl;
+		printMostDistantPages(maxDepth);
+		// printAllDepthPages(maxDepth);
 	}
 	return 0;
 }

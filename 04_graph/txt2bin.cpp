@@ -11,8 +11,17 @@ int relCount[num_of_pages];
 int main(int argc, char *argv[])
 {
 	std::ifstream ifs;
-	ifs.open("wikipedia_links/links.txt");
-	//ifs.open("test.txt");
+	std::ofstream ofs;
+	if(argc < 3){
+		std::cout << "usage: txt2bin <links.txt> <rel.bin>" << std::endl;
+		return 1;
+	}
+	ifs.open(argv[1]);
+	if(!ifs){
+		std::cout << "input file not found." << std::endl;
+		return 1;
+	}
+	ofs.open(argv[2], std::ios::out);
 
 	int lastFrom = 0;
 	while(!ifs.eof()){
@@ -37,8 +46,8 @@ int main(int argc, char *argv[])
 			lastFrom = fromID;
 		}
 		*/
-		std::cout.write((char *)&fromID, sizeof(int));
-		std::cout.write((char *)&toID, sizeof(int));
+		ofs.write((char *)&fromID, sizeof(int));
+		ofs.write((char *)&toID, sizeof(int));
 	}
 /*
 	int maxIndex = 0;
