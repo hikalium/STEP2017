@@ -7,6 +7,7 @@
 const int max_pages = 1500000;  // >= 1483276
 
 int page_depth[max_pages];
+int page_linked_from[max_pages];
 int rels[64 * 1024 * 1024][2];	// [from, to]
 int num_of_rels = 0;
 std::ifstream ifs_pages;
@@ -67,6 +68,7 @@ void resetDepth()
 {
 	for(int i = 0; i < num_of_pages; i++){
 		page_depth[i] = -1;
+		page_linked_from[i] = -1;
 	}
 }
 
@@ -123,6 +125,15 @@ void printDepthPagesStatistics(int maxDepth)
 	std::cout << std::endl;
 }
 
+void printRoute(int toID)
+{
+	std::cout << toID << ": " << title[toID] << std::endl;
+	for(toID = page_linked_from[toID]; toID != -1; toID = page_linked_from[toID]){
+		std::cout << "↑" << std::endl;
+		std::cout << toID << ": " << title[toID] << std::endl;
+	}
+}
+
 void printMostDistantPages(int maxDepth)
 {
 	for(int i = 0; i < num_of_pages; i++){
@@ -130,6 +141,7 @@ void printMostDistantPages(int maxDepth)
 		if(depth != maxDepth) continue;
 		std::cout << depth << " > " << 
 			i << ": " << title[i] << std::endl;
+		printRoute(i);
 	}
 }
 
@@ -145,11 +157,13 @@ int dfs(int depth)
 			*/
 		//
 		for(int i = page_rels_start_index[t]; ; i++){
-			if(rels[i][0] != t) break;
+			int from = rels[i][0];
 			int to = rels[i][1];
+			if(from != t) break;
 			if(page_depth[to] == -1){
 				//for(int k = 0; k < depth + 1; k++) std::cout << "\t";
 				page_depth[to] = depth + 1;
+				page_linked_from[to] = from;
 				
 				//std::cout << rels[i][0] << " -> " << to << std::endl;
 
